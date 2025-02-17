@@ -45,7 +45,7 @@ jobs:
       - name: Push Tag
         run: |
           git tag ${{ env.NEW_VERSION }}
-          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Dash-LMS/DashLMS-Core-Database.git ${{ env.NEW_VERSION }}
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Dash-LMS/DashLMS-Core-Database.git ${{ env.NEW_VERSION }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -53,4 +53,4 @@ jobs:
           tag_name: ${{ env.NEW_VERSION }}
           name: Release ${{ env.NEW_VERSION }}
           body: "Automated release of version ${{ env.NEW_VERSION }}"
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
