@@ -8,9 +8,14 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write    # Ensure GitHub Actions can write to the repo
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -21,31 +26,30 @@ jobs:
         id: version
         run: |
           VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "Current version: $VERSION"
           IFS='.' read -r major minor patch <<< "${VERSION#v}"
           if git log -1 --pretty=%B | grep -q '#major'; then
-            major=$((major+1))
-            minor=0
-            patch=0
+            major=$((major+1)); minor=0; patch=0
           elif git log -1 --pretty=%B | grep -q '#minor'; then
-            minor=$((minor+1))
-            patch=0
+            minor=$((minor+1)); patch=0
           else
             patch=$((patch+1))
           fi
           NEW_VERSION="v$major.$minor.$patch"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-          echo "New version: $NEW_VERSION"
 
-      - name: Create Git Tag
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Push Tag
         run: |
           git tag ${{ env.NEW_VERSION }}
-          git push origin ${{ env.NEW_VERSION }}
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Dash-LMS/DashLMS-Core-Database.git ${{ env.NEW_VERSION }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.NEW_VERSION }}
           name: Release ${{ env.NEW_VERSION }}
-          draft: false
-          prerelease: false
+          token: ${{ secrets.GH_TOKEN }}
