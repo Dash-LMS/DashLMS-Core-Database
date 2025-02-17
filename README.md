@@ -107,3 +107,11 @@ func main() {
   fmt.Println("Database connected successfully")
 }
 ```
+
+## Commit Rules
+
+The version increments are based on commit messages
+
+- #major → Increments major version (e.g., v1.0.0 → v2.0.0)
+- #minor → Increments minor version (e.g., v1.0.0 → v1.1.0)
+- Default → Increments patch version (e.g., v1.0.0 → v1.0.1)
