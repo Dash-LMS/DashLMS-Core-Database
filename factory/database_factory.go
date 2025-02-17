@@ -3,18 +3,20 @@ package factory
 import (
 	"errors"
 
-	"github.com/Dash-LMS/DashLMS-Core-Database/drivers"
+	"github.com/Dash-LMS/DashLMS-Core-Database/drivers/mongo"
+	"github.com/Dash-LMS/DashLMS-Core-Database/drivers/mysql"
+	"github.com/Dash-LMS/DashLMS-Core-Database/drivers/postgres"
 	"github.com/Dash-LMS/DashLMS-Core-Database/interfaces"
 )
 
 func NewCommandDatabase(driverType string) (interfaces.CommandDatabase, error) {
 	switch driverType {
 	case "mongo":
-		return &drivers.MongoCommandDriver{}, nil
+		return &mongo.MongoCommandDriver{}, nil
 	case "postgres":
-		return &drivers.PostgresCommandDriver{}, nil
+		return &postgres.PostgresCommandDriver{}, nil
 	case "mysql":
-		return &drivers.MysqlCommandDriver{}, nil
+		return &mysql.MysqlCommandDriver{}, nil
 	default:
 		return nil, errors.New("unsupported driver type")
 	}
@@ -23,11 +25,11 @@ func NewCommandDatabase(driverType string) (interfaces.CommandDatabase, error) {
 func NewQueryDatabase(driverType string) (interfaces.QueryDatabase, error) {
 	switch driverType {
 	case "mongo":
-		return &drivers.MongoQueryDriver{}, nil
+		return &mongo.MongoQueryDriver{}, nil
 	case "postgres":
-		return &drivers.PostgresQueryDriver{}, nil
+		return &postgres.PostgresQueryDriver{}, nil
 	case "mysql":
-		return &drivers.MysqlQueryDriver{}, nil
+		return &mysql.MysqlQueryDriver{}, nil
 	default:
 		return nil, errors.New("unsupported driver type")
 	}
