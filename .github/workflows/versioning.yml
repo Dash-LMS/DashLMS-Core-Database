@@ -9,7 +9,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write    # Ensure GitHub Actions can write to the repo
+      contents: write
 
     steps:
       - name: Checkout code
@@ -52,4 +52,5 @@ jobs:
         with:
           tag_name: ${{ env.NEW_VERSION }}
           name: Release ${{ env.NEW_VERSION }}
+          body: "Automated release of version ${{ env.NEW_VERSION }}"
           token: ${{ secrets.GH_TOKEN }}
