@@ -1,5 +1,9 @@
 # Go Database Library
 
+## Go Library Link
+
+[Go Library DashLMS-Core-Database](https://pkg.go.dev/github.com/Dash-LMS/DashLMS-Core-Database/drivers/postgres)
+
 ## General Idea
 
 This project provides a database operation library in Golang using the Echo framework. It supports multiple database drivers (MongoDB, PostgreSQL, and MySQL) with basic CRUD operations following CQRS principles.
