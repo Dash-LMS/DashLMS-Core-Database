@@ -1,7 +1,6 @@
 package mysql_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/Dash-LMS/DashLMS-Core-Database/drivers/mysql"
@@ -11,8 +10,8 @@ import (
 )
 
 type TestTable struct {
-	ID  uint `gorm:"primaryKey"`
-	Key string
+	ID  uint   `gorm:"primaryKey"`
+	Key string `gorm:"index"`
 }
 
 func (TestTable) TableName() string {
@@ -21,10 +20,7 @@ func (TestTable) TableName() string {
 
 // TestMysqlCommandDriver_Create ensures we can create a record with valid credentials.
 func TestMysqlCommandDriver_Create(t *testing.T) {
-	dsn := os.Getenv("MYSQL_DSN")
-	if dsn == "" {
-		dsn = "root:root@tcp(localhost:3306)/testdb?charset=utf8mb4&parseTime=True&loc=Local"
-	}
+	dsn := "root:root@tcp(localhost:3306)/testdb?charset=utf8mb4&parseTime=True&loc=Local"
 
 	db, err := gorm.Open(test_mysql.Open(dsn), &gorm.Config{})
 	assert.NoError(t, err, "failed to connect to MySQL")
@@ -32,8 +28,8 @@ func TestMysqlCommandDriver_Create(t *testing.T) {
 	err = db.AutoMigrate(&TestTable{})
 	assert.NoError(t, err, "failed to migrate test_table")
 
-	driver := &mysql.MysqlCommandDriver{DB: db}
-	err = driver.Create("test_table", map[string]interface{}{"key": "value"})
+	commandDriver := &mysql.MysqlCommandDriver{DB: db}
+	err = commandDriver.Create("test_table", map[string]interface{}{"key": "value"})
 	assert.NoError(t, err, "failed to create record")
 }
 

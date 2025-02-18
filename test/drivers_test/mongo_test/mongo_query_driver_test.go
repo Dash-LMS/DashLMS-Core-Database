@@ -1,7 +1,6 @@
 package mongo_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/Dash-LMS/DashLMS-Core-Database/drivers/mongo"
@@ -11,30 +10,26 @@ import (
 )
 
 func TestMongoQueryDriver_Read(t *testing.T) {
-	connectionString := os.Getenv("MONGO_URI")
 	mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock)).Run("TestMongoQueryDriver_Read", func(mt *mtest.T) {
-		// Mock a successful read operation
-		mt.AddMockResponses(mtest.CreateCursorResponse(1, "testDatabase.testCollection", mtest.FirstBatch, bson.D{{Key: "key", Value: "value"}}))
+		mt.AddMockResponses(mtest.CreateCursorResponse(1, "testdb.testCollection", mtest.FirstBatch, bson.D{{Key: "key", Value: "value"}}))
 
-		driver := &mongo.MongoQueryDriver{}
+		queryDriver := &mongo.MongoQueryDriver{ConnectionTimeout: 5}
+		queryDriver.SetClient(mt.Client)
+		queryDriver.SetDatabaseName("testdb")
 
-		err := driver.Connect(connectionString)
-		assert.NoError(t, err, "failed to connect to MongoDB")
-
-		result, err := driver.Read("testCollection", bson.M{"key": "value"})
+		result, err := queryDriver.Read("testCollection", bson.M{"key": "value"})
 		assert.NoError(t, err, "failed to read document")
-		assert.NotNil(t, result, "expected non-nil result")
+		assert.NotNil(t, result, "expected a document to be found")
 	})
 
 	mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock)).Run("TestMongoQueryDriver_Read_Failure", func(mt *mtest.T) {
-		// Mock a failed read operation
 		mt.AddMockResponses(mtest.CreateCommandErrorResponse(mtest.CommandError{Code: 11000, Message: "document not found"}))
 
-		driver := &mongo.MongoQueryDriver{}
-		err := driver.Connect(connectionString)
-		assert.NoError(t, err, "failed to connect to MongoDB")
+		queryDriver := &mongo.MongoQueryDriver{ConnectionTimeout: 5}
+		queryDriver.SetClient(mt.Client)
+		queryDriver.SetDatabaseName("testdb")
 
-		_, err = driver.Read("testCollection", bson.M{"key": "nonexistent"})
-		assert.Error(t, err, "expected document not found error")
+		_, err := queryDriver.Read("testCollection", bson.M{"key": "nonexistent"})
+		assert.Error(t, err, "expected a document not found error")
 	})
 }

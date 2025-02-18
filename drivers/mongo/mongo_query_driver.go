@@ -15,6 +15,16 @@ type MongoQueryDriver struct {
 	ConnectionTimeout time.Duration
 }
 
+// New method to set the client directly for tests
+func (m *MongoQueryDriver) SetClient(client *mongo.Client) {
+	m.client = client
+}
+
+// New method to set the database name for tests
+func (m *MongoQueryDriver) SetDatabaseName(name string) {
+	m.databaseName = name
+}
+
 func (m *MongoQueryDriver) Connect(connectionString string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), m.ConnectionTimeout)
 	defer cancel()
@@ -38,21 +48,19 @@ func (m *MongoQueryDriver) SetQueryDatabase(databaseName string) {
 }
 
 func (m *MongoQueryDriver) Close() error {
-	const HALF = 2
-	ctx, cancel := context.WithTimeout(context.Background(), m.ConnectionTimeout/HALF)
+	ctx, cancel := context.WithTimeout(context.Background(), m.ConnectionTimeout/2)
 	defer cancel()
 
 	return m.client.Disconnect(ctx)
 }
 
 func (m *MongoQueryDriver) Read(collection string, filter interface{}) (interface{}, error) {
-	const HALF = 2
 	if filter == nil {
 		return nil, errors.New("filter cannot be nil")
 	}
 
 	coll := m.client.Database(m.databaseName).Collection(collection)
-	ctx, cancel := context.WithTimeout(context.Background(), m.ConnectionTimeout/HALF)
+	ctx, cancel := context.WithTimeout(context.Background(), m.ConnectionTimeout/2)
 	defer cancel()
 
 	result := coll.FindOne(ctx, filter)

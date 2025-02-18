@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS test_table (
-    id SERIAL PRIMARY KEY,
-    key VARCHAR(255) NOT NULL
-);

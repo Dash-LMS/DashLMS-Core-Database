@@ -13,7 +13,7 @@ func ValidateQuery(query interface{}) error {
 
 	v := reflect.ValueOf(query)
 
-	// Handle nil pointers gracefully
+	// Handle pointers
 	if v.Kind() == reflect.Ptr {
 		if v.IsNil() {
 			return errors.New("query pointer cannot be nil")
@@ -21,17 +21,18 @@ func ValidateQuery(query interface{}) error {
 		v = v.Elem()
 	}
 
-	// Handle empty maps or unsupported types
+	// Check allowed types
 	switch v.Kind() {
 	case reflect.Map:
 		if v.Len() == 0 {
 			return errors.New("query cannot be an empty map")
 		}
 	case reflect.Struct:
+		// Validate only existing fields
 		requiredFields := []string{"Name", "Email"}
 		for _, field := range requiredFields {
 			fv := v.FieldByName(field)
-			if !fv.IsValid() || isZero(fv) {
+			if fv.IsValid() && isZero(fv) {
 				return errors.New("missing required field: " + field)
 			}
 		}
@@ -39,7 +40,7 @@ func ValidateQuery(query interface{}) error {
 		return errors.New("query must be a map or a struct")
 	}
 
-	// Additional email validation if present
+	// Additional validation for email in structs
 	if v.Kind() == reflect.Struct {
 		emailField := v.FieldByName("Email")
 		if emailField.IsValid() && !isValidEmail(emailField.String()) {
@@ -47,6 +48,7 @@ func ValidateQuery(query interface{}) error {
 		}
 	}
 
+	// Additional map-specific validation
 	if v.Kind() == reflect.Map {
 		nameValue := v.MapIndex(reflect.ValueOf("name"))
 		if nameValue.IsValid() && nameValue.Kind() == reflect.String {

@@ -2,7 +2,7 @@
 
 ## Go Library Link
 
-[Go Library DashLMS-Core-Database](https://pkg.go.dev/github.com/Dash-LMS/DashLMS-Core-Database/drivers/postgres)
+[Go Library DashLMS-Core-Database](https://pkg.go.dev/github.com/Dash-LMS/DashLMS-Core-Database)
 
 ## General Idea
 
@@ -73,19 +73,13 @@ DashLMS-Core-Database/
 ## Initialization Steps
 
 1. Open PowerShell in the project directory.
-2. Run the initialization script:
-
-   ```powershell
-   .\init.ps1
-   ```
-
-3. Initialize the Go module:
+2. Initialize the Go module:
 
    ```sh
    go mod tidy
    ```
 
-4. Import the necessary drivers and use the library as needed.
+3. Import the necessary drivers and use the library as needed.
 
 ## Usage
 

@@ -59,7 +59,7 @@ $env:MYSQL_DSN     = "root:root@tcp(localhost:3306)/testdb?charset=utf8mb4&parse
 $env:POSTGRES_DSN  = "host=localhost port=5432 user=test password=test dbname=test sslmode=disable"
 
 Write-Host "=== Running go test -v ./... ==="
-go test -v ./...
+go test -v ./test/./...
 
 Write-Host "=== Done ==="
 
